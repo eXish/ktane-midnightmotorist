@@ -384,14 +384,6 @@ Prefab:
       propertyPath: m_Name
       value: The Midnight Motorist
       objectReference: {fileID: 0}
-    - target: {fileID: 1982894769220752, guid: 11be50cb36577e543984e18e914ff49a, type: 2}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1805116869701592, guid: 11be50cb36577e543984e18e914ff49a, type: 2}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 11be50cb36577e543984e18e914ff49a, type: 2}
   m_IsPrefabParent: 0
