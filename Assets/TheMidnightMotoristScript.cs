@@ -5,13 +5,27 @@ using UnityEngine;
 using KModkit;
 using System.Text.RegularExpressions;
 using System;
+using Rnd = UnityEngine.Random;
 //using Bingus;
+//using Pemus;
 
 public class TheMidnightMotoristScript : MonoBehaviour {
 
    public KMAudio audio;
    public KMBombInfo bomb;
    public KMSelectable[] buttons;
+
+   public KMSelectable LeftStick;
+   public KMSelectable LBlueButton;
+   public KMSelectable LYellowButton;
+
+   public SpriteRenderer GoalLine;
+
+   public GameObject LeftStickGO;
+   bool CanMoveStick = false;
+   Vector3 MousePos = new Vector3(-1000, -1000, -1000);
+   bool MoveUp = false;
+   bool MoveDown = false; //Have these as two separate bools so no potential funny shenanigans happens
 
    public Sprite[] CarsSpr;
    public SpriteRenderer[] TestCarsRen;
@@ -34,28 +48,35 @@ public class TheMidnightMotoristScript : MonoBehaviour {
    int moduleId;
    private bool moduleSolved;
 
+   Coroutine RoadGoBrrrrr;
+
    void Awake () {
       moduleId = moduleIdCounter++;
       foreach (KMSelectable obj in buttons) {
          KMSelectable pressed = obj;
          pressed.OnInteract += delegate () { PressButton(pressed); return false; };
       }
+
+      LeftStick.OnInteract += delegate () { StickPress(); return false; };
+      LeftStick.OnInteractEnded += delegate () { StickRelease(); };
    }
 
    void Start () {
       raceOrder = raceOrder.Shuffle();
       Debug.LogFormat("[The Midnight Motorist #{0}] Car color order: {1}", moduleId, raceOrder.Join(""));
       GenerateRace();
-      StartCoroutine(ChangeRoad());
-      RaceResult(TestCarsRen[0], TestCarsRen[1], TestCarsRen[2], TestCarsRen[3]);
+      RoadGoBrrrrr = StartCoroutine(ChangeRoad());
+      StartCoroutine(MoveStick(LeftStickGO));
+      StartCoroutine(ShowTestRace());
    }
 
    void GenerateRace () {
       List<char> usedCars = new List<char>();
       while (usedCars.Count != 4) {
          int choice = UnityEngine.Random.Range(0, raceOrder.Length);
-         while (usedCars.Contains(raceOrder[choice]))
+         while (usedCars.Contains(raceOrder[choice])) {
             choice = UnityEngine.Random.Range(0, raceOrder.Length);
+         }
          usedCars.Add(raceOrder[choice]);
       }
       for (int i = 0; i < 4; i++) {
@@ -106,7 +127,15 @@ public class TheMidnightMotoristScript : MonoBehaviour {
       }
    }
 
-   #region
+   void StickPress () {
+      CanMoveStick = true;
+   }
+
+   void StickRelease () {
+      CanMoveStick = false;
+   }
+
+   #region Animation
 
    IEnumerator ChangeRoad () {
       while (true) {
@@ -137,7 +166,98 @@ public class TheMidnightMotoristScript : MonoBehaviour {
       }
    }
 
+   IEnumerator ShowTestRace () {
+      for (int i = 0; i < 20; i++) {
+         for (int j = 0; j < 4; j++) {
+            TestCarsRen[j].transform.transform.transform.transform.transform.transform.transform.localPosition -= new Vector3(.056f, 0, 0);
+         }
+         yield return new WaitForSeconds((float) .1 / 2);
+      }
+      float[] TempSpeeds1 = { Rnd.Range(0.01f, 0.03f), Rnd.Range(0.01f, 0.03f), Rnd.Range(0.01f, 0.03f), Rnd.Range(0.01f, 0.03f) };
+      for (int i = 0; i < 20; i++) {
+         for (int j = 0; j < 4; j++) {
+            
+            TestCarsRen[j].transform.transform.transform.transform.transform.transform.transform.localPosition -= new Vector3(TempSpeeds1[j], 0, 0);
+         }
+         yield return new WaitForSeconds((float) .1 / 2);
+      }
+      RoadDelay /= 5;
+      TempSpeeds1 = new float[] { Rnd.Range(.065f, 0.09f), Rnd.Range(.065f, 0.09f), Rnd.Range(.065f, 0.09f), Rnd.Range(.065f, 0.09f) };
+      for (int i = 0; i < 30; i++) {
+         
+         for (int j = 0; j < 4; j++) {
+            TestCarsRen[j].transform.transform.transform.transform.transform.transform.transform.localPosition += new Vector3(TempSpeeds1[j], 0, 0);
+         }
+         yield return new WaitForSeconds((float) .1 / 2);
+      }
+      yield return new WaitForSeconds(.9f);
+      for (int i = 0; i < 25; i++) {
+         GoalLine.transform.transform.transform.transform.transform.transform.transform.localPosition += new Vector3(.02f, 0, 0);
+         yield return new WaitForSeconds(.01f);
+      }
+      StopCoroutine(RoadGoBrrrrr);
+      for (int j = 0; j < 4; j++) {
+         TestCarsRen[j].transform.transform.transform.transform.transform.transform.transform.localPosition = new Vector3(1, 0.458f, TestCarsRen[j].transform.localPosition.z);
+      }
+      TempSpeeds1 = new float[] { Rnd.Range(.1f, 0.2f), Rnd.Range(.1f, 0.2f), Rnd.Range(.1f, 0.2f), Rnd.Range(.1f, 0.2f) };
+      for (int i = 0; i < 30; i++) {
+
+         for (int j = 0; j < 4; j++) {
+            
+            TestCarsRen[j].transform.transform.transform.transform.transform.transform.transform.localPosition -= new Vector3(TempSpeeds1[j], 0, 0);
+         }
+         yield return new WaitForSeconds(.03f);
+      }
+   }
+
+   IEnumerator MoveStick (GameObject Stick) {
+      while (true) {
+         //Debug.Log(Stick.transform.localEulerAngles.x);
+         if (MoveUp && (Stick.transform.localEulerAngles.x < 30f || Stick.transform.localEulerAngles.x > 329f)) { 
+            Stick.transform.Rotate(new Vector3(3f, 0, 0));
+         }
+         else if (MoveDown && (Stick.transform.localEulerAngles.x > 330 || Stick.transform.localEulerAngles.x < 31)) {
+            Stick.transform.Rotate(new Vector3(-3f, 0, 0));
+         }
+         else if (!MoveDown && !MoveUp) {
+            if (Stick.transform.localEulerAngles.x > 0 && Stick.transform.localEulerAngles.x < 31) {
+               Stick.transform.localEulerAngles += new Vector3(-3f, 0, 0);
+               //LeftStickGO.transform.Rotate(new Vector3(-3f, 0, 0));
+            }
+            else if (Stick.transform.localEulerAngles.x > 329) {
+               //LeftStickGO.transform.Rotate(new Vector3(3f, 0, 0));
+               Stick.transform.localEulerAngles += new Vector3(3f, 0, 0);
+            }
+            if (Math.Abs(1 - Stick.transform.localEulerAngles.x) > 0 && Stick.transform.localEulerAngles.x < 1) {
+               Stick.transform.localEulerAngles = new Vector3(0, 0, 0);
+            }
+         }
+         yield return new WaitForSeconds(.01f);
+      }
+   }
+
    #endregion
+
+   private void Update () {
+      if (CanMoveStick) {
+         if (MousePos == new Vector3(-1000, -1000, -1000)) {
+            MousePos = Input.mousePosition;
+         }
+         if (Input.mousePosition.y > MousePos.y) {
+            MoveUp = true;
+            MoveDown = false;
+         }
+         else if (Input.mousePosition.y < MousePos.y) { //elif necessary so that if player does not move cursor, stick does not go up
+            MoveDown = true;
+            MoveUp = false;
+         }
+      }
+      if (!CanMoveStick) {
+         MousePos = new Vector3(-1000, -1000, -1000);
+         MoveUp = false;
+         MoveDown = false;
+      }
+   }
 
    //twitch plays
 #pragma warning disable 414
