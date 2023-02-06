@@ -167,13 +167,14 @@ public class TheMidnightMotoristScript : MonoBehaviour {
    }
 
    IEnumerator ShowTestRace () {
+      float[] TempSpeeds1 = { Rnd.Range(0.04f, 0.056f), Rnd.Range(0.04f, 0.056f), Rnd.Range(0.04f, 0.056f), Rnd.Range(0.04f, 0.056f) };
       for (int i = 0; i < 20; i++) {
          for (int j = 0; j < 4; j++) {
-            TestCarsRen[j].transform.transform.transform.transform.transform.transform.transform.localPosition -= new Vector3(.056f, 0, 0);
+            TestCarsRen[j].transform.transform.transform.transform.transform.transform.transform.localPosition -= new Vector3(TempSpeeds1[j], 0, 0);
          }
          yield return new WaitForSeconds((float) .1 / 2);
       }
-      float[] TempSpeeds1 = { Rnd.Range(0.01f, 0.03f), Rnd.Range(0.01f, 0.03f), Rnd.Range(0.01f, 0.03f), Rnd.Range(0.01f, 0.03f) };
+      TempSpeeds1 = new float[]{ Rnd.Range(0.01f, 0.03f), Rnd.Range(0.01f, 0.03f), Rnd.Range(0.01f, 0.03f), Rnd.Range(0.01f, 0.03f) };
       for (int i = 0; i < 20; i++) {
          for (int j = 0; j < 4; j++) {
             
@@ -196,6 +197,7 @@ public class TheMidnightMotoristScript : MonoBehaviour {
          yield return new WaitForSeconds(.01f);
       }
       StopCoroutine(RoadGoBrrrrr);
+      yield return new WaitForSeconds(.5f);
       for (int j = 0; j < 4; j++) {
          TestCarsRen[j].transform.transform.transform.transform.transform.transform.transform.localPosition = new Vector3(1, 0.458f, TestCarsRen[j].transform.localPosition.z);
       }
@@ -220,11 +222,11 @@ public class TheMidnightMotoristScript : MonoBehaviour {
             Stick.transform.Rotate(new Vector3(-3f, 0, 0));
          }
          else if (!MoveDown && !MoveUp) {
-            if (Stick.transform.localEulerAngles.x > 0 && Stick.transform.localEulerAngles.x < 31) {
+            if (Stick.transform.localEulerAngles.x > 0 && Stick.transform.localEulerAngles.x < 36) {
                Stick.transform.localEulerAngles += new Vector3(-3f, 0, 0);
                //LeftStickGO.transform.Rotate(new Vector3(-3f, 0, 0));
             }
-            else if (Stick.transform.localEulerAngles.x > 329) {
+            else if (Stick.transform.localEulerAngles.x > 300) {
                //LeftStickGO.transform.Rotate(new Vector3(3f, 0, 0));
                Stick.transform.localEulerAngles += new Vector3(3f, 0, 0);
             }
