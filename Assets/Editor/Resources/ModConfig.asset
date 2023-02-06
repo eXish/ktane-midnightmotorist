@@ -11,8 +11,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 615501dbe4f3fe94fbf4b564abb10237, type: 3}
   m_Name: ModConfig
   m_EditorClassIdentifier: 
-  id: midnightMotoristModule
-  title: Midnight Motorist
+  id: theMidnightMotoristModule
+  title: The Midnight Motorist
   author: eXish, Deaf
   description: 'Time to get drunk and go drive home from McDonalds.
 
@@ -22,11 +22,11 @@ MonoBehaviour:
     PDF: https://ktane.timwi.de/PDF/Midnight%20Motorist.pdf
 
 
-    Midnight Motorist (midnightMotoristModule) v1.0.0
+    The Midnight Motorist (theMidnightMotoristModule) v1.0.0
 
     Module Idea by Deaf
 
-    Implemented by eXish'
+    Implemented by eXish and Deaf'
   version: 1.0.0
   outputFolder: build
   previewImage: {fileID: 2800000, guid: c0b2ae231f11b024fafeeeb9603aa510, type: 3}

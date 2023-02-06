@@ -113,45 +113,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &42515505 stripped
-GameObject:
-  m_PrefabParentObject: {fileID: 1506581457912890, guid: 11be50cb36577e543984e18e914ff49a,
-    type: 2}
-  m_PrefabInternal: {fileID: 1340821424}
---- !u!23 &42515509
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 42515505}
-  m_Enabled: 0
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_Materials:
-  - {fileID: 2100000, guid: 5f9a3d1f2de088c41abe352e0c799f21, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 0
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
 --- !u!1001 &286684101
 Prefab:
   m_ObjectHideFlags: 0
@@ -422,30 +383,6 @@ Prefab:
     - target: {fileID: 1371807027823920, guid: 11be50cb36577e543984e18e914ff49a, type: 2}
       propertyPath: m_Name
       value: The Midnight Motorist
-      objectReference: {fileID: 0}
-    - target: {fileID: 4456591391788606, guid: 11be50cb36577e543984e18e914ff49a, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: -0.01012
-      objectReference: {fileID: 0}
-    - target: {fileID: 4456591391788606, guid: 11be50cb36577e543984e18e914ff49a, type: 2}
-      propertyPath: m_LocalPosition.z
-      value: 0.000893
-      objectReference: {fileID: 0}
-    - target: {fileID: 4456591391788606, guid: 11be50cb36577e543984e18e914ff49a, type: 2}
-      propertyPath: m_LocalScale.x
-      value: 1.136382
-      objectReference: {fileID: 0}
-    - target: {fileID: 4456591391788606, guid: 11be50cb36577e543984e18e914ff49a, type: 2}
-      propertyPath: m_LocalScale.y
-      value: 1.08
-      objectReference: {fileID: 0}
-    - target: {fileID: 4456591391788606, guid: 11be50cb36577e543984e18e914ff49a, type: 2}
-      propertyPath: m_LocalScale.z
-      value: 1.0303897
-      objectReference: {fileID: 0}
-    - target: {fileID: 4456591391788606, guid: 11be50cb36577e543984e18e914ff49a, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: -0.000149
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 11be50cb36577e543984e18e914ff49a, type: 2}
