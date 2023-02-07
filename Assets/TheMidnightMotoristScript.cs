@@ -43,7 +43,6 @@ public class TheMidnightMotoristScript : MonoBehaviour {
     private int correctCar;
     private int currentSelection;
     private bool playingRace;
-    private bool modifyDistribution;
     private bool submissionMode;
 
     private float RoadDelay = .1f; //This is the delay that is in between each change of road
@@ -71,9 +70,8 @@ public class TheMidnightMotoristScript : MonoBehaviour {
 
     void Start()
     {
+        submitOrder = submitOrder.Shuffle();
         raceOrder = raceOrder.Shuffle();
-        if (Rnd.Range(0, 2) == 1)
-            modifyDistribution = true;
         for (int i = 0; i < raceOrder.Length; i++)
             Debug.LogFormat("[The Midnight Motorist #{0}] The {1} car will always lose to {2}, and will always beat {3}", moduleId, raceOrder[i], GetCarsAhead(raceOrder[i]).ToCharArray().Shuffle().Join(""), GetCarsBefore(raceOrder[i]).ToCharArray().Shuffle().Join(""));
         //Determine correct car
@@ -160,7 +158,7 @@ public class TheMidnightMotoristScript : MonoBehaviour {
             }
             else
             {
-                Debug.LogFormat("[The Midnight Motorist #{0}] You dared to fiddle with <insert name here>'s controls", moduleId);
+                Debug.LogFormat("[The Midnight Motorist #{0}] You dared to fiddle with Alfonso's controls", moduleId);
                 GetComponent<KMBombModule>().HandleStrike();
             }
         }
@@ -170,7 +168,7 @@ public class TheMidnightMotoristScript : MonoBehaviour {
     {
         string ahead = "";
         int index = Array.IndexOf(raceOrder, car);
-        for (int i = 0; i < (modifyDistribution ? 4 : 3); i++)
+        for (int i = 0; i < (Array.IndexOf(raceOrder, car) < 4 ? 3 : 4); i++)
         {
             index += 1;
             if (index == raceOrder.Length)
@@ -184,7 +182,7 @@ public class TheMidnightMotoristScript : MonoBehaviour {
     {
         string before = "";
         int index = Array.IndexOf(raceOrder, car);
-        for (int i = 0; i < (modifyDistribution ? 3 : 4); i++)
+        for (int i = 0; i < (Array.IndexOf(raceOrder, car) < 4 ? 4 : 3); i++)
         {
             index -= 1;
             if (index == -1)
