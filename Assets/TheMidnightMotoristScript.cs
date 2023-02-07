@@ -19,11 +19,13 @@ public class TheMidnightMotoristScript : MonoBehaviour {
 
     public SpriteRenderer GoalLine;
 
+    public GameObject Selector;
     public GameObject LeftStickGO;
     bool CanMoveStick = false;
     Vector3 MousePos = new Vector3(-1000, -1000, -1000);
     bool MoveUp = false;
     bool MoveDown = false; //Have these as two separate bools so no potential funny shenanigans happens
+    bool MoveRegister = false;
 
     public Sprite[] CarsSpr;
     public SpriteRenderer[] TestCarsRen;
@@ -38,12 +40,14 @@ public class TheMidnightMotoristScript : MonoBehaviour {
     public GameObject SubPhase;
 
     private char[] submitOrder = new char[] { 'B', 'P', 'G', 'V', 'W', 'O', 'Y', 'R' };
+    private char[] carColors = new char[] { 'R', 'O', 'Y', 'G', 'B', 'V', 'P', 'W' };
     private char[] raceOrder = new char[] { 'R', 'O', 'Y', 'G', 'B', 'V', 'P', 'W' };
     private char[] currentRace = new char[4];
     private int correctCar;
     private int currentSelection;
-    private bool playingRace;
+    private bool playedRace;
     private bool submissionMode;
+    private bool animatingRace;
 
     private float RoadDelay = .1f; //This is the delay that is in between each change of road
     private int RoadIndex = 0; //Index of sprite
@@ -70,11 +74,10 @@ public class TheMidnightMotoristScript : MonoBehaviour {
 
     void Start()
     {
-        submitOrder = submitOrder.Shuffle();
         raceOrder = raceOrder.Shuffle();
         for (int i = 0; i < raceOrder.Length; i++)
             Debug.LogFormat("[The Midnight Motorist #{0}] The {1} car will always lose to {2}, and will always beat {3}", moduleId, raceOrder[i], GetCarsAhead(raceOrder[i]).ToCharArray().Shuffle().Join(""), GetCarsBefore(raceOrder[i]).ToCharArray().Shuffle().Join(""));
-        //Determine correct car
+        GenerateSubmission(false);
         GenerateRace();
         StartCoroutine(MoveStick(LeftStickGO));
     }
@@ -92,7 +95,42 @@ public class TheMidnightMotoristScript : MonoBehaviour {
         for (int i = 0; i < 4; i++)
             currentRace[i] = usedCars[i];
         for (int i = 0; i < 4; i++)
-            TestCarsRen[i].sprite = CarsSpr[Array.IndexOf(raceOrder, currentRace[i])];
+            TestCarsRen[i].sprite = CarsSpr[Array.IndexOf(carColors, currentRace[i])];
+    }
+
+    void GenerateSubmission(bool notFirst)
+    {
+        submitOrder = submitOrder.Shuffle();
+        for (int i = 0; i < 8; i++)
+            SubCarsRen[i].sprite = CarsSpr[Array.IndexOf(carColors, submitOrder[i])];
+        Debug.LogFormat("[The Midnight Motorist #{0}] The cars in the submit phase from top to bottom are{2}: {1}", moduleId, submitOrder.Join(""), notFirst ? " now" : "");
+        int bracket1 = 1;
+        int bracket2 = 3;
+        int bracket3 = 5;
+        int bracket4 = 7;
+        int bracket5;
+        int bracket6;
+        if (GetCarsBefore(submitOrder[0]).Contains(submitOrder[1]))
+            bracket1 = 0;
+        if (GetCarsBefore(submitOrder[2]).Contains(submitOrder[3]))
+            bracket2 = 2;
+        if (GetCarsBefore(submitOrder[4]).Contains(submitOrder[5]))
+            bracket3 = 4;
+        if (GetCarsBefore(submitOrder[6]).Contains(submitOrder[7]))
+            bracket4 = 6;
+        if (GetCarsBefore(submitOrder[bracket1]).Contains(submitOrder[bracket2]))
+            bracket5 = bracket1;
+        else
+            bracket5 = bracket2;
+        if (GetCarsBefore(submitOrder[bracket3]).Contains(submitOrder[bracket4]))
+            bracket6 = bracket3;
+        else
+            bracket6 = bracket4;
+        if (GetCarsBefore(submitOrder[bracket5]).Contains(submitOrder[bracket6]))
+            correctCar = bracket5;
+        else
+            correctCar = bracket6;
+        Debug.LogFormat("[The Midnight Motorist #{0}] The correct car to select is: {1}", moduleId, submitOrder[correctCar]);
     }
 
     void PressButton(KMSelectable pressed)
@@ -105,15 +143,17 @@ public class TheMidnightMotoristScript : MonoBehaviour {
             {
                 if (!submissionMode)
                 {
-                    if (!playingRace)
+                    if (!playedRace)
                     {
-                        playingRace = true;
+                        playedRace = true;
+                        animatingRace = true;
                         RoadGoBrrrrr = StartCoroutine(ChangeRoad());
                         TestGoBrrrrr = StartCoroutine(ShowTestRace());
                     }
                     else
                     {
-                        playingRace = false;
+                        playedRace = false;
+                        animatingRace = false;
                         StopCoroutine(RoadGoBrrrrr);
                         StopCoroutine(TestGoBrrrrr);
                         RoadDelay = .1f;
@@ -140,23 +180,21 @@ public class TheMidnightMotoristScript : MonoBehaviour {
                     //Run submit mode race and strike/pass at end
                 }
             }
-            else if (index == 1)
+            else if (index == 1 && !animatingRace)
             {
                 submissionMode = !submissionMode;
                 if (submissionMode)
                 {
                     TestPhase.SetActive(false);
                     SubPhase.SetActive(true);
-                    //Show selection cursor
                 }
                 else
                 {
                     TestPhase.SetActive(true);
                     SubPhase.SetActive(false);
-                    //Hide selection cursor
                 }
             }
-            else
+            else if (index > 1)
             {
                 Debug.LogFormat("[The Midnight Motorist #{0}] You dared to fiddle with Alfonso's controls", moduleId);
                 GetComponent<KMBombModule>().HandleStrike();
@@ -262,7 +300,6 @@ public class TheMidnightMotoristScript : MonoBehaviour {
         TempSpeeds1 = new float[] { Rnd.Range(.065f, 0.09f), Rnd.Range(.065f, 0.09f), Rnd.Range(.065f, 0.09f), Rnd.Range(.065f, 0.09f) };
         for (int i = 0; i < 30; i++)
         {
-
             for (int j = 0; j < 4; j++)
             {
                 TestCarsRen[j].transform.transform.transform.transform.transform.transform.transform.localPosition += new Vector3(TempSpeeds1[j], 0, 0);
@@ -281,17 +318,17 @@ public class TheMidnightMotoristScript : MonoBehaviour {
         {
             TestCarsRen[j].transform.transform.transform.transform.transform.transform.transform.localPosition = new Vector3(1, 0.458f, TestCarsRen[j].transform.localPosition.z);
         }
+        //Make sure race actually displays properly here
         TempSpeeds1 = new float[] { Rnd.Range(.1f, 0.2f), Rnd.Range(.1f, 0.2f), Rnd.Range(.1f, 0.2f), Rnd.Range(.1f, 0.2f) };
         for (int i = 0; i < 30; i++)
         {
-
             for (int j = 0; j < 4; j++)
             {
-
                 TestCarsRen[j].transform.transform.transform.transform.transform.transform.transform.localPosition -= new Vector3(TempSpeeds1[j], 0, 0);
             }
             yield return new WaitForSeconds(.03f);
         }
+        animatingRace = false;
     }
 
     IEnumerator MoveStick(GameObject Stick)
@@ -299,16 +336,41 @@ public class TheMidnightMotoristScript : MonoBehaviour {
         while (true)
         {
             //Debug.Log(Stick.transform.localEulerAngles.x);
-            if (MoveUp && (Stick.transform.localEulerAngles.x < 30f || Stick.transform.localEulerAngles.x > 329f))
+            if (MoveUp)
             {
-                Stick.transform.Rotate(new Vector3(3f, 0, 0));
+                if (Stick.transform.localEulerAngles.x < 30f || Stick.transform.localEulerAngles.x > 329f)
+                {
+                    MoveRegister = false;
+                    Stick.transform.Rotate(new Vector3(3f, 0, 0));
+                }
+                else if (!MoveRegister)
+                {
+                    MoveRegister = true;
+                    currentSelection -= 1;
+                    if (currentSelection == -1)
+                        currentSelection = raceOrder.Length - 1;
+                    Selector.transform.localPosition = new Vector3(0.55f, SubCarsRen[currentSelection].transform.localPosition.y, SubCarsRen[currentSelection].transform.localPosition.z);
+                }
             }
-            else if (MoveDown && (Stick.transform.localEulerAngles.x > 330 || Stick.transform.localEulerAngles.x < 31))
+            else if (MoveDown)
             {
-                Stick.transform.Rotate(new Vector3(-3f, 0, 0));
+                if (Stick.transform.localEulerAngles.x > 330 || Stick.transform.localEulerAngles.x < 31)
+                {
+                    MoveRegister = false;
+                    Stick.transform.Rotate(new Vector3(-3f, 0, 0));
+                }
+                else if (!MoveRegister)
+                {
+                    MoveRegister = true;
+                    currentSelection += 1;
+                    if (currentSelection == raceOrder.Length)
+                        currentSelection = 0;
+                    Selector.transform.localPosition = new Vector3(0.55f, SubCarsRen[currentSelection].transform.localPosition.y, SubCarsRen[currentSelection].transform.localPosition.z);
+                }
             }
             else if (!MoveDown && !MoveUp)
             {
+                MoveRegister = false;
                 if (Stick.transform.localEulerAngles.x > 0 && Stick.transform.localEulerAngles.x < 36)
                 {
                     Stick.transform.localEulerAngles += new Vector3(-3f, 0, 0);
