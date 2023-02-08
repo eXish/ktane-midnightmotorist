@@ -269,11 +269,11 @@ public class TheMidnightMotoristScript : MonoBehaviour
         }
     }
 
-    bool ValueTooClose(List<float> speeds, float speed)
+    bool ValueTooClose(List<float> speeds, float speed, float threshold)
     {
         for (int i = 0; i < speeds.Count; i++)
         {
-            if (((speeds[i] + .01f) > speed) && ((speeds[i] - .01f) < speed))
+            if (((speeds[i] + threshold) > speed) && ((speeds[i] - threshold) < speed))
                 return true;
         }
         return false;
@@ -361,7 +361,7 @@ public class TheMidnightMotoristScript : MonoBehaviour
         for (int i = 0; i < 4; i++)
         {
             float gen = Rnd.Range(0.12f, 0.22f);
-            while (ValueTooClose(genSpeeds, gen))
+            while (ValueTooClose(genSpeeds, gen, .01f))
                 gen = Rnd.Range(0.12f, 0.22f);
             genSpeeds.Add(gen);
         }
@@ -467,8 +467,152 @@ public class TheMidnightMotoristScript : MonoBehaviour
         {
             SubCarsRen[j].transform.transform.transform.transform.transform.transform.transform.localPosition = new Vector3(1, 0.458f, SubCarsRen[j].transform.localPosition.z);
         }
-        //Make sure race actually displays properly here
-        TempSpeeds1 = new float[] { Rnd.Range(.1f, 0.2f), Rnd.Range(.1f, 0.2f), Rnd.Range(.1f, 0.2f), Rnd.Range(.1f, 0.2f), Rnd.Range(.1f, 0.2f), Rnd.Range(.1f, 0.2f), Rnd.Range(.1f, 0.2f), Rnd.Range(.1f, 0.2f) };
+        TempSpeeds1 = new float[8];
+        List<float> genSpeeds = new List<float>();
+        for (int i = 0; i < 8; i++)
+        {
+            float gen = Rnd.Range(0.12f, 0.22f);
+            while (ValueTooClose(genSpeeds, gen, .008f))
+                gen = Rnd.Range(0.12f, 0.22f);
+            genSpeeds.Add(gen);
+        }
+        genSpeeds.Sort();
+        int bracket1;
+        int bracket2;
+        int bracket3;
+        int bracket4;
+        int bracket5;
+        int bracket6;
+        int loser1;
+        int loser2;
+        int loser3;
+        int loser4;
+        int loser5;
+        int loser6;
+        int loseBracket1;
+        int loseBracket2;
+        int loseLoser1;
+        int loseLoser2;
+        if (GetCarsAhead(submitOrder[0]).Contains(submitOrder[1]))
+        {
+            bracket1 = 1;
+            loser1 = 0;
+        }
+        else
+        {
+            bracket1 = 0;
+            loser1 = 1;
+        }
+        if (GetCarsAhead(submitOrder[2]).Contains(submitOrder[3]))
+        {
+            bracket2 = 3;
+            loser2 = 2;
+        }
+        else
+        {
+            bracket2 = 2;
+            loser2 = 3;
+        }
+        if (GetCarsAhead(submitOrder[4]).Contains(submitOrder[5]))
+        {
+            bracket3 = 5;
+            loser3 = 4;
+        }
+        else
+        {
+            bracket3 = 4;
+            loser3 = 5;
+        }
+        if (GetCarsAhead(submitOrder[6]).Contains(submitOrder[7]))
+        {
+            bracket4 = 7;
+            loser4 = 6;
+        }
+        else
+        {
+            bracket4 = 6;
+            loser4 = 7;
+        }
+        if (GetCarsAhead(submitOrder[bracket1]).Contains(submitOrder[bracket2]))
+        {
+            bracket5 = bracket2;
+            loser5 = bracket1;
+        }
+        else
+        {
+            bracket5 = bracket1;
+            loser5 = bracket2;
+        }
+        if (GetCarsAhead(submitOrder[bracket3]).Contains(submitOrder[bracket4]))
+        {
+            bracket6 = bracket4;
+            loser6 = bracket3;
+        }
+        else
+        {
+            bracket6 = bracket3;
+            loser6 = bracket4;
+        }
+        if (GetCarsAhead(submitOrder[bracket5]).Contains(submitOrder[bracket6]))
+        {
+            TempSpeeds1[bracket6] = genSpeeds[7];
+            TempSpeeds1[bracket5] = genSpeeds[6];
+        }
+        else
+        {
+            TempSpeeds1[bracket5] = genSpeeds[7];
+            TempSpeeds1[bracket6] = genSpeeds[6];
+        }
+        if (GetCarsAhead(submitOrder[loser5]).Contains(submitOrder[loser6]))
+        {
+            TempSpeeds1[loser6] = genSpeeds[5];
+            TempSpeeds1[loser5] = genSpeeds[4];
+        }
+        else
+        {
+            TempSpeeds1[loser5] = genSpeeds[5];
+            TempSpeeds1[loser6] = genSpeeds[4];
+        }
+        if (GetCarsAhead(submitOrder[loser1]).Contains(submitOrder[loser2]))
+        {
+            loseBracket1 = loser2;
+            loseLoser1 = loser1;
+        }
+        else
+        {
+            loseBracket1 = loser1;
+            loseLoser1 = loser2;
+        }
+        if (GetCarsAhead(submitOrder[loser3]).Contains(submitOrder[loser4]))
+        {
+            loseBracket2 = loser4;
+            loseLoser2 = loser3;
+        }
+        else
+        {
+            loseBracket2 = loser3;
+            loseLoser2 = loser4;
+        }
+        if (GetCarsAhead(submitOrder[loseLoser1]).Contains(submitOrder[loseLoser2]))
+        {
+            TempSpeeds1[loseLoser2] = genSpeeds[3];
+            TempSpeeds1[loseLoser1] = genSpeeds[2];
+        }
+        else
+        {
+            TempSpeeds1[loseLoser1] = genSpeeds[3];
+            TempSpeeds1[loseLoser2] = genSpeeds[2];
+        }
+        if (GetCarsAhead(submitOrder[loseBracket1]).Contains(submitOrder[loseBracket2]))
+        {
+            TempSpeeds1[loseBracket2] = genSpeeds[1];
+            TempSpeeds1[loseBracket1] = genSpeeds[0];
+        }
+        else
+        {
+            TempSpeeds1[loseBracket1] = genSpeeds[1];
+            TempSpeeds1[loseBracket2] = genSpeeds[0];
+        }
         for (int i = 0; i < 30; i++)
         {
             for (int j = 0; j < 8; j++)
