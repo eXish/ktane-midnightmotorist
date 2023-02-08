@@ -17,9 +17,9 @@ MonoBehaviour:
   description: 'Time to get drunk and go drive home from McDonalds.
 
 
-    HTML: https://ktane.timwi.de/HTML/Midnight%20Motorist.html
+    HTML: https://ktane.timwi.de/HTML/The%20Midnight%20Motorist.html
 
-    PDF: https://ktane.timwi.de/PDF/Midnight%20Motorist.pdf
+    PDF: https://ktane.timwi.de/PDF/The%20Midnight%20Motorist.pdf
 
 
     The Midnight Motorist (theMidnightMotoristModule) v1.0.0
@@ -29,4 +29,4 @@ MonoBehaviour:
     Implemented by eXish and Deaf'
   version: 1.0.0
   outputFolder: build
-  previewImage: {fileID: 2800000, guid: c0b2ae231f11b024fafeeeb9603aa510, type: 3}
+  previewImage: {fileID: 2800000, guid: 74cf656fb02e5d7429469b438a1748e2, type: 3}
