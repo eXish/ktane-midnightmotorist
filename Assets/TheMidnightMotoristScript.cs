@@ -269,6 +269,16 @@ public class TheMidnightMotoristScript : MonoBehaviour
         }
     }
 
+    bool ValueTooClose(List<float> speeds, float speed)
+    {
+        for (int i = 0; i < speeds.Count; i++)
+        {
+            if (((speeds[i] + .01f) > speed) && ((speeds[i] - .01f) < speed))
+                return true;
+        }
+        return false;
+    }
+
     #region Animation
 
     IEnumerator ChangeRoad()
@@ -346,8 +356,60 @@ public class TheMidnightMotoristScript : MonoBehaviour
         {
             TestCarsRen[j].transform.transform.transform.transform.transform.transform.transform.localPosition = new Vector3(1, 0.458f, TestCarsRen[j].transform.localPosition.z);
         }
-        //Make sure race actually displays properly here
-        TempSpeeds1 = new float[] { Rnd.Range(.1f, 0.2f), Rnd.Range(.1f, 0.2f), Rnd.Range(.1f, 0.2f), Rnd.Range(.1f, 0.2f) };
+        TempSpeeds1 = new float[4];
+        List<float> genSpeeds = new List<float>();
+        for (int i = 0; i < 4; i++)
+        {
+            float gen = Rnd.Range(0.12f, 0.22f);
+            while (ValueTooClose(genSpeeds, gen))
+                gen = Rnd.Range(0.12f, 0.22f);
+            genSpeeds.Add(gen);
+        }
+        genSpeeds.Sort();
+        int bracket1;
+        int bracket2;
+        int loser1;
+        int loser2;
+        if (GetCarsAhead(currentRace[0]).Contains(currentRace[1]))
+        {
+            bracket1 = 1;
+            loser1 = 0;
+        }
+        else
+        {
+            bracket1 = 0;
+            loser1 = 1;
+        }
+        if (GetCarsAhead(currentRace[2]).Contains(currentRace[3]))
+        {
+            bracket2 = 3;
+            loser2 = 2;
+        }
+        else
+        {
+            bracket2 = 2;
+            loser2 = 3;
+        }
+        if (GetCarsAhead(currentRace[bracket1]).Contains(currentRace[bracket2]))
+        {
+            TempSpeeds1[bracket2] = genSpeeds[3];
+            TempSpeeds1[bracket1] = genSpeeds[2];
+        }
+        else
+        {
+            TempSpeeds1[bracket1] = genSpeeds[3];
+            TempSpeeds1[bracket2] = genSpeeds[2];
+        }
+        if (GetCarsAhead(currentRace[loser1]).Contains(currentRace[loser2]))
+        {
+            TempSpeeds1[loser2] = genSpeeds[1];
+            TempSpeeds1[loser1] = genSpeeds[0];
+        }
+        else
+        {
+            TempSpeeds1[loser1] = genSpeeds[1];
+            TempSpeeds1[loser2] = genSpeeds[0];
+        }
         for (int i = 0; i < 30; i++)
         {
             for (int j = 0; j < 4; j++)
