@@ -1171,6 +1171,6 @@ public class TheMidnightMotoristScript : MonoBehaviour
             }
             buttons[0].OnInteract();
         }
-        while (!SolveText.gameObject.activeSelf) yield return true;
+        while (!moduleSolved) yield return true;
     }
 }
