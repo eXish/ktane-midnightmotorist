@@ -538,7 +538,7 @@ public class TheMidnightMotoristScript : MonoBehaviour
         for (int i = 0; i < 8; i++)
         {
             float gen = Rnd.Range(0.12f, 0.22f);
-            while (ValueTooClose(genSpeeds, gen, .008f))
+            while (ValueTooClose(genSpeeds, gen, .007f))
                 gen = Rnd.Range(0.12f, 0.22f);
             genSpeeds.Add(gen);
         }
