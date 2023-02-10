@@ -325,11 +325,11 @@ public class TheMidnightMotoristScript : MonoBehaviour
         volumeText.text = "";
     }
 
-    bool ValueTooClose(List<float> speeds, float speed, float threshold)
+    bool ValueTooClose(List<float> speeds, float speed)
     {
         for (int i = 0; i < speeds.Count; i++)
         {
-            if (((speeds[i] + threshold) > speed) && ((speeds[i] - threshold) < speed))
+            if (((speeds[i] + .01f) > speed) && ((speeds[i] - .01f) < speed))
                 return true;
         }
         return false;
@@ -426,7 +426,7 @@ public class TheMidnightMotoristScript : MonoBehaviour
         for (int i = 0; i < 4; i++)
         {
             float gen = Rnd.Range(0.12f, 0.22f);
-            while (ValueTooClose(genSpeeds, gen, .01f))
+            while (ValueTooClose(genSpeeds, gen))
                 gen = Rnd.Range(0.12f, 0.22f);
             genSpeeds.Add(gen);
         }
@@ -533,13 +533,21 @@ public class TheMidnightMotoristScript : MonoBehaviour
         {
             SubCarsRen[j].transform.transform.transform.transform.transform.transform.transform.localPosition = new Vector3(1, 0.458f, SubCarsRen[j].transform.localPosition.z);
         }
+        redo:
+        int tries = 0;
         TempSpeeds1 = new float[8];
         List<float> genSpeeds = new List<float>();
         for (int i = 0; i < 8; i++)
         {
             float gen = Rnd.Range(0.12f, 0.22f);
-            while (ValueTooClose(genSpeeds, gen, .007f))
+            while (ValueTooClose(genSpeeds, gen))
+            {
                 gen = Rnd.Range(0.12f, 0.22f);
+                tries++;
+                if (tries == 1000)
+                    goto redo;
+            }
+            tries = 0;
             genSpeeds.Add(gen);
         }
         genSpeeds.Sort();
