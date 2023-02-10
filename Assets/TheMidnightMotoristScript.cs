@@ -325,11 +325,11 @@ public class TheMidnightMotoristScript : MonoBehaviour
         volumeText.text = "";
     }
 
-    bool ValueTooClose(List<float> speeds, float speed)
+    bool ValueTooClose(List<float> speeds, float speed, float threshold)
     {
         for (int i = 0; i < speeds.Count; i++)
         {
-            if (((speeds[i] + .01f) > speed) && ((speeds[i] - .01f) < speed))
+            if (((speeds[i] + threshold) > speed) && ((speeds[i] - threshold) < speed))
                 return true;
         }
         return false;
@@ -426,7 +426,7 @@ public class TheMidnightMotoristScript : MonoBehaviour
         for (int i = 0; i < 4; i++)
         {
             float gen = Rnd.Range(0.12f, 0.22f);
-            while (ValueTooClose(genSpeeds, gen))
+            while (ValueTooClose(genSpeeds, gen, .01f))
                 gen = Rnd.Range(0.12f, 0.22f);
             genSpeeds.Add(gen);
         }
@@ -540,7 +540,7 @@ public class TheMidnightMotoristScript : MonoBehaviour
         for (int i = 0; i < 8; i++)
         {
             float gen = Rnd.Range(0.12f, 0.22f);
-            while (ValueTooClose(genSpeeds, gen))
+            while (ValueTooClose(genSpeeds, gen, .008f))
             {
                 gen = Rnd.Range(0.12f, 0.22f);
                 tries++;
