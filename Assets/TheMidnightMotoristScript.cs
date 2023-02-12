@@ -426,7 +426,7 @@ public class TheMidnightMotoristScript : MonoBehaviour
         for (int i = 0; i < 4; i++)
         {
             float gen = Rnd.Range(0.12f, 0.22f);
-            while (ValueTooClose(genSpeeds, gen, .01f))
+            while (ValueTooClose(genSpeeds, gen, .015f))
                 gen = Rnd.Range(0.12f, 0.22f);
             genSpeeds.Add(gen);
         }
@@ -512,7 +512,7 @@ public class TheMidnightMotoristScript : MonoBehaviour
             yield return new WaitForSeconds((float).1 / 2);
         }
         RoadDelay /= 5;
-        TempSpeeds1 = new float[] { Rnd.Range(.065f, 0.09f), Rnd.Range(.065f, 0.09f), Rnd.Range(.065f, 0.09f), Rnd.Range(.065f, 0.09f), Rnd.Range(.065f, 0.09f), Rnd.Range(.065f, 0.09f), Rnd.Range(.065f, 0.09f), Rnd.Range(.065f, 0.09f) };
+        TempSpeeds1 = new float[] { Rnd.Range(.074f, 0.09f), Rnd.Range(.074f, 0.09f), Rnd.Range(.074f, 0.09f), Rnd.Range(.074f, 0.09f), Rnd.Range(.074f, 0.09f), Rnd.Range(.074f, 0.09f), Rnd.Range(.074f, 0.09f), Rnd.Range(.074f, 0.09f) };
         for (int i = 0; i < 30; i++)
         {
             for (int j = 0; j < 8; j++)
@@ -540,7 +540,7 @@ public class TheMidnightMotoristScript : MonoBehaviour
         for (int i = 0; i < 8; i++)
         {
             float gen = Rnd.Range(0.12f, 0.22f);
-            while (ValueTooClose(genSpeeds, gen, .008f))
+            while (ValueTooClose(genSpeeds, gen, .01f))
             {
                 gen = Rnd.Range(0.12f, 0.22f);
                 tries++;
