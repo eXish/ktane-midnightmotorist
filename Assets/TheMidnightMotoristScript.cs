@@ -421,13 +421,21 @@ public class TheMidnightMotoristScript : MonoBehaviour
         {
             TestCarsRen[j].transform.transform.transform.transform.transform.transform.transform.localPosition = new Vector3(1, 0.458f, TestCarsRen[j].transform.localPosition.z);
         }
+        redo:
+        int tries = 0;
         TempSpeeds1 = new float[4];
         List<float> genSpeeds = new List<float>();
         for (int i = 0; i < 4; i++)
         {
             float gen = Rnd.Range(0.12f, 0.22f);
             while (ValueTooClose(genSpeeds, gen, .02f))
+            {
                 gen = Rnd.Range(0.12f, 0.22f);
+                tries++;
+                if (tries == 1000)
+                    goto redo;
+            }
+            tries = 0;
             genSpeeds.Add(gen);
         }
         genSpeeds.Sort();

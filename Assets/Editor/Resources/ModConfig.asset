@@ -25,11 +25,11 @@ MonoBehaviour:
     PDF: https://ktane.timwi.de/PDF/The%20Midnight%20Motorist.pdf
 
 
-    The Midnight Motorist (theMidnightMotoristModule) v1.0.6
+    The Midnight Motorist (theMidnightMotoristModule) v1.0.7
 
     Module Idea by Deaf
 
     Implemented by eXish and Deaf'
-  version: 1.0.6
+  version: 1.0.7
   outputFolder: build
   previewImage: {fileID: 2800000, guid: 74cf656fb02e5d7429469b438a1748e2, type: 3}
