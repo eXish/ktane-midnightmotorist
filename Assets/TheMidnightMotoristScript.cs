@@ -238,6 +238,7 @@ public class TheMidnightMotoristScript : MonoBehaviour {
             }
             else {
                if (BadCars.Contains(submitOrder[currentSelection])) {
+                  audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, pressed.transform);
                   BadCars.Remove(submitOrder[currentSelection]);
                   BadCarsIndices.Remove(currentSelection);
                }
@@ -245,6 +246,7 @@ public class TheMidnightMotoristScript : MonoBehaviour {
                   audio.PlaySoundAtTransform("ButtonFail", transform);
                }
                else {
+                  audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.ButtonPress, pressed.transform);
                   BadCars.Add(submitOrder[currentSelection]);
                   BadCarsIndices.Add(currentSelection);
                }
@@ -916,34 +918,51 @@ public class TheMidnightMotoristScript : MonoBehaviour {
    //twitch plays
    bool TwitchPlaysActive;
 #pragma warning disable 414
-   private readonly string TwitchHelpMessage = @"!{0} press <yellow/y/blue/b> [Presses the yellow or blue button on the left] | !{0} select <1-8> [Selects the specified car from top to bottom if in the submit phase]";
+   private readonly string TwitchHelpMessage = @"!{0} press <left/l/right/r> <yellow/y/blue/b> [Presses the yellow or blue button on the left or right] | !{0} select <1-8> [Selects the specified car from top to bottom if in the submit phase]";
 #pragma warning restore 414
    IEnumerator ProcessTwitchCommand (string command) {
       string[] parameters = command.Split(' ');
       if (Regex.IsMatch(parameters[0], @"^\s*press\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)) {
-         if (parameters.Length > 2) {
+         if (parameters.Length > 3) {
             yield return "sendtochaterror Too many parameters!";
          }
-         else if (parameters.Length == 1) {
-            yield return "sendtochaterror Please specify which button to press!";
+         else if (parameters.Length == 2 || parameters.Length == 1) {
+            yield return "sendtochaterror Please include all parameters of the command!";
          }
          else {
-            if (parameters[1].ToLowerInvariant().EqualsAny("yellow", "y")) {
-               yield return null;
-               if (submissionMode && currentSelection == correctCar && !animatingRace) {
-                  yield return "solve";
+            if (parameters[1].ToLowerInvariant().EqualsAny("left", "l")) {
+               if (parameters[2].ToLowerInvariant().EqualsAny("yellow", "y")) {
+                  yield return null;
+                  if (submissionMode && currentSelection == correctCar && !animatingRace) {
+                     yield return "solve";
+                  }
+                  else if (submissionMode && currentSelection != correctCar && !animatingRace) {
+                     yield return "strike";
+                  }
+                  buttons[0].OnInteract();
                }
-               else if (submissionMode && currentSelection != correctCar && !animatingRace) {
-                  yield return "strike";
+               else if (parameters[2].ToLowerInvariant().EqualsAny("blue", "b")) {
+                  yield return null;
+                  buttons[1].OnInteract();
                }
-               buttons[0].OnInteract();
+               else {
+                  yield return "sendtochaterror!f The third parameter '" + parameters[2] + "' is invalid!";
+               }
             }
-            else if (parameters[1].ToLowerInvariant().EqualsAny("blue", "b")) {
-               yield return null;
-               buttons[1].OnInteract();
+            else if (parameters[1].ToLowerInvariant().EqualsAny("right", "r")) { 
+               if (parameters[2].ToLowerInvariant().EqualsAny("yellow", "y")) {
+                  yield return null;
+                  buttons[2].OnInteract();
+               }
+               else if (parameters[2].ToLowerInvariant().EqualsAny("blue", "b")) {
+                  yield return "sendtochaterror This button cannot be interacted with on Twitch Plays!";
+               }
+               else {
+                  yield return "sendtochaterror!f The third parameter '" + parameters[2] + "' is invalid!";
+               }
             }
-            else {
-               yield return "sendtochaterror The specified button '" + parameters[1] + "' is invalid!";
+            else { 
+               yield return "sendtochaterror!f The second parameter '" + parameters[1] + "' is invalid!";
             }
          }
          yield break;
@@ -1014,7 +1033,7 @@ public class TheMidnightMotoristScript : MonoBehaviour {
                }
             }
             else {
-               yield return "sendtochaterror The specified car '" + parameters[1] + "' is invalid!";
+               yield return "sendtochaterror!f The specified car '" + parameters[1] + "' is invalid!";
             }
          }
       }
