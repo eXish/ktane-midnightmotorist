@@ -1,9 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using UnityEngine;
 using System.Text.RegularExpressions;
 using System;
+using System.Reflection;
 using Rnd = UnityEngine.Random;
 //using Bingus;
 //using Pemus;
@@ -67,6 +69,9 @@ public class TheMidnightMotoristScript : MonoBehaviour {
    public GameObject TestPhase;
    public GameObject SubPhase;
 
+   bool SoloModeForBomb;
+   bool DetonateSoloBomb;
+
 
    private char[] submitOrder = new char[] { 'B', 'P', 'G', 'V', 'W', 'O', 'Y', 'R' };
    private char[] carColors = new char[] { 'R', 'O', 'Y', 'G', 'B', 'V', 'P', 'W' };
@@ -95,6 +100,7 @@ public class TheMidnightMotoristScript : MonoBehaviour {
    List<int> BadCarsIndices = new List<int> { };
 
    void Awake () {
+
       moduleId = moduleIdCounter++;
       foreach (KMSelectable obj in buttons) {
          KMSelectable pressed = obj;
@@ -107,13 +113,32 @@ public class TheMidnightMotoristScript : MonoBehaviour {
       RightStick.OnInteractEnded += delegate () { StickRightRelease(); };
    }
 
+   private string GetMissionID () {
+      try {
+         Component gameplayState = GameObject.Find("GameplayState(Clone)").GetComponent("GameplayState");
+         Type type = gameplayState.GetType();
+         FieldInfo fieldMission = type.GetField("MissionToLoad", BindingFlags.Public | BindingFlags.Static);
+         return fieldMission.GetValue(gameplayState).ToString();
+      }
+
+      catch (NullReferenceException) {
+         return "undefined";
+      }
+   }
+
    void Start () {
+
+      if (GetMissionID() == "mod_ThiccBombs_TrueSolo") {
+         SoloModeForBomb = true;
+         StartCoroutine(CheckForCheating());
+      }
+
       float scalar = transform.lossyScale.x;
       for (var i = 0; i < Lights.Length; i++)
          Lights[i].range *= scalar;
       raceOrder = raceOrder.Shuffle();
       for (int i = 0; i < raceOrder.Length; i++)
-         Debug.LogFormat("[The Midnight Motorist #{0}] The {1} car will always lose to {2}, and will always beat {3}", moduleId, raceOrder[i], GetCarsAhead(raceOrder[i]).ToCharArray().Shuffle().Join(""), GetCarsBefore(raceOrder[i]).ToCharArray().Shuffle().Join(""));
+         UnityEngine.Debug.LogFormat("[The Midnight Motorist #{0}] The {1} car will always lose to {2}, and will always beat {3}", moduleId, raceOrder[i], GetCarsAhead(raceOrder[i]).ToCharArray().Shuffle().Join(""), GetCarsBefore(raceOrder[i]).ToCharArray().Shuffle().Join(""));
       GenerateSubmission(false);
       GenerateRace();
       StartCoroutine(MoveLeftStick());
@@ -138,7 +163,7 @@ public class TheMidnightMotoristScript : MonoBehaviour {
       submitOrder = submitOrder.Shuffle();
       for (int i = 0; i < 8; i++)
          SubCarsRen[i].sprite = CarsSpr[Array.IndexOf(carColors, submitOrder[i])];
-      Debug.LogFormat("[The Midnight Motorist #{0}] The cars in the submit phase from top to bottom are{2}: {1}", moduleId, submitOrder.Join(""), notFirst ? " now" : "");
+      UnityEngine.Debug.LogFormat("[The Midnight Motorist #{0}] The cars in the submit phase from top to bottom are{2}: {1}", moduleId, submitOrder.Join(""), notFirst ? " now" : "");
       int bracket1 = 1;
       int bracket2 = 3;
       int bracket3 = 5;
@@ -165,7 +190,7 @@ public class TheMidnightMotoristScript : MonoBehaviour {
          correctCar = bracket5;
       else
          correctCar = bracket6;
-      Debug.LogFormat("[The Midnight Motorist #{0}] The correct car to select is: {1}", moduleId, submitOrder[correctCar]);
+      UnityEngine.Debug.LogFormat("[The Midnight Motorist #{0}] The correct car to select is: {1}", moduleId, submitOrder[correctCar]);
    }
 
    void PressButton (KMSelectable pressed) {
@@ -199,11 +224,11 @@ public class TheMidnightMotoristScript : MonoBehaviour {
             else if (!animatingRace) {
                animatingRace = true;
                if (currentSelection == correctCar) {
-                  Debug.LogFormat("[The Midnight Motorist #{0}] You chose the {1} car, which is correct", moduleId, submitOrder[currentSelection]);
+                  UnityEngine.Debug.LogFormat("[The Midnight Motorist #{0}] You chose the {1} car, which is correct", moduleId, submitOrder[currentSelection]);
                   StartCoroutine(ShowFinalRace(true));
                }
                else {
-                  Debug.LogFormat("[The Midnight Motorist #{0}] You chose the {1} car, which is incorrect", moduleId, submitOrder[currentSelection]);
+                  UnityEngine.Debug.LogFormat("[The Midnight Motorist #{0}] You chose the {1} car, which is incorrect", moduleId, submitOrder[currentSelection]);
                   StartCoroutine(ShowFinalRace(false));
                }
             }
@@ -299,7 +324,7 @@ public class TheMidnightMotoristScript : MonoBehaviour {
 
    void StickLeftRelease () {
       CanMoveLeftStick = false;
-      if (TickGoBrrrrr != null) {
+      if (TickGoBrrrrr != null && !moduleSolved) {
          StopCoroutine(TickGoBrrrrr);
       }
    }
@@ -652,7 +677,7 @@ public class TheMidnightMotoristScript : MonoBehaviour {
          }
          moduleSolved = true;
          GetComponent<KMBombModule>().HandlePass();
-         Debug.LogFormat("[The Midnight Motorist #{0}] Module solved", moduleId);
+         UnityEngine.Debug.LogFormat("[The Midnight Motorist #{0}] Module solved", moduleId);
       }
       else {
          StrikeText.gameObject.SetActive(true);
@@ -691,13 +716,13 @@ public class TheMidnightMotoristScript : MonoBehaviour {
 
    IEnumerator MoveLeftStick () {
       while (true) {
-         //Debug.Log(LeftStickGO.transform.localEulerAngles.x);
+         //UnityEngine.Debug.Log(LeftStickGO.transform.localEulerAngles.x);
          if (MoveLeftUp) {
             if (LeftStickGO.transform.localEulerAngles.x < 30f || LeftStickGO.transform.localEulerAngles.x > 329f) {
                MoveLeftRegister = false;
                LeftStickGO.transform.Rotate(new Vector3(3f, 0, 0));
             }
-            else if (!MoveLeftRegister) {
+            else if (!MoveLeftRegister && !moduleSolved) {
                MoveLeftRegister = true;
                TickGoBrrrrr = StartCoroutine(MoveSelectionTick("up"));
             }
@@ -716,7 +741,7 @@ public class TheMidnightMotoristScript : MonoBehaviour {
                MoveLeftRegister = false;
                LeftStickGO.transform.Rotate(new Vector3(-3f, 0, 0));
             }
-            else if (!MoveLeftRegister) {
+            else if (!MoveLeftRegister && !moduleSolved) {
                MoveLeftRegister = true;
                TickGoBrrrrr = StartCoroutine(MoveSelectionTick("down"));
             }
@@ -750,7 +775,7 @@ public class TheMidnightMotoristScript : MonoBehaviour {
 
    IEnumerator MoveRightStick () {
       while (true) {
-         //Debug.Log(RightStickGO.transform.localEulerAngles.x);
+         //UnityEngine.Debug.Log(RightStickGO.transform.localEulerAngles.x);
          if (MoveRightUp) {
             if (RightStickGO.transform.localEulerAngles.x < 30f || RightStickGO.transform.localEulerAngles.x > 329f) {
                MoveRightRegister = false;
@@ -876,7 +901,34 @@ public class TheMidnightMotoristScript : MonoBehaviour {
 
    #endregion
 
+   IEnumerator CheckForCheating () {
+      do {
+         if (SoloModeForBomb) {
+            try {
+               if (IsBrowserOpen()) {
+                  DetonateSoloBomb = true;
+                  UnityEngine.Debug.Log("A browser/notepad was open at some point.");
+               }
+               if (!IsOBSOpen()) {
+                  DetonateSoloBomb = true;
+                  UnityEngine.Debug.Log("OBS was not open.");
+               }
+            }
+            catch (Exception) {
+               //UnityEngine.Debug.Log("Something was open or closed.");
+               throw;
+            }
+         }
+         yield return new WaitForSeconds(Rnd.Range(1, 180f)); //So that way it's unpredictable
+      } while (!DetonateSoloBomb);
+   }
+
    private void Update () {
+      if (SoloModeForBomb) {
+         if (DetonateSoloBomb && bomb.GetSolvedModuleNames().Count() == 47) {
+            GetComponent<KMBombModule>().HandleStrike();
+         }
+      }
       if (CanMoveLeftStick && !TwitchPlaysActive) {
          if (MouseLeftPos == new Vector3(-1000, -1000, -1000)) {
             MouseLeftPos = Input.mousePosition;
@@ -914,6 +966,57 @@ public class TheMidnightMotoristScript : MonoBehaviour {
          MoveRightDown = false;
       }
    }
+
+   private bool IsBrowserOpen () {
+      // Check running processes to see if any match the common browser process names
+      var runningProcesses = Process.GetProcesses();
+      foreach (var process in runningProcesses) {
+         try {
+            // Check if the process is still running before accessing its properties
+            if (!process.HasExited && browserProcesses.Contains(process.ProcessName.ToLower())) {
+               return true; // Browser found
+            }
+         }
+         catch (InvalidOperationException) {
+            // Process has already exited, continue to the next one
+            continue;
+         }
+      }
+
+      return false; // No browser processes found
+   }
+
+   private bool IsOBSOpen () {
+      // Check running processes to see if any match the common browser process names
+      var runningProcesses = Process.GetProcesses();
+      foreach (var process in runningProcesses) {
+         try {
+            // Check if the process is still running before accessing its properties
+            if (!process.HasExited && process.ProcessName.ToLower().Contains("obs")) {
+               return true; // Browser found
+            }
+         }
+         catch (InvalidOperationException) {
+            // Process has already exited, continue to the next one
+            continue;
+         }
+      }
+
+      return false; // No browser processes found
+   }
+
+   private readonly string[] browserProcesses = new string[]
+    {
+        "chrome",
+        "firefox",
+        "msedge",
+        "opera",
+        "notepad++",
+        "Discord",
+        "iexplore" // Internet Explorer
+    };
+
+
 
    //twitch plays
    bool TwitchPlaysActive;
