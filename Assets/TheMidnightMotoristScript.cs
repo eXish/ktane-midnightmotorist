@@ -207,7 +207,8 @@ public class TheMidnightMotoristScript : MonoBehaviour {
                else {
                   playedRace = false;
                   animatingRace = false;
-                  StopCoroutine(RoadGoBrrrrr);
+                  if (RoadGoBrrrrr != null)
+                     StopCoroutine(RoadGoBrrrrr);
                   StopCoroutine(TestGoBrrrrr);
                   RoadDelay = .1f;
                   RoadIndex = 0;
